@@ -13,3 +13,7 @@ USAGE:
 ## barge
 
 a function that generates bars out of percentages, designed to be easy to read and modify as needed. ```barge.sh``` is an example script which does nothing, as an easy base to hack barge into your existing script.
+
+## yodel
+
+a tool that sits around printf to make it slightly less painful to use. might be useable as a function. 
