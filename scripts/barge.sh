@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# barge example script v0.1.1
+# barge v0.1.1 - simple and fast progress bar generator
 # made with <3 from moth.monster
 
 # SPDX-License-Identifier: WTFPL
