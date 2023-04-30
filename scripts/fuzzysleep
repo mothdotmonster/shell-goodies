@@ -3,8 +3,7 @@
 # fuzzysleep - so you don't crash the server at midnight on Sunday
 # made with <3 from moth.monster
 
-# SPDX-License-Identifier: AGPL-3.0-or-later
-
+# SPDX-License-Identifier: WTFPL
 
 random(){ # convenience function that returns a random number between 1 and what you call it with
   echo $(( $(awk 'BEGIN { srand(); print int(rand()*'$(( $1 - 1 ))') }') + 1 )) # magic
