@@ -1,0 +1,159 @@
+#!/bin/sh
+
+# yodel v0.2.1 - a printf wrapper that might not suck
+
+help(){
+	printf '%s\n\n' "yodel v0.2.1"
+  printf '%s\n' "USAGE:"
+  printf '%s\033[1m%s\033[m%s\n' "-b / --bold: print " "bold" " text"
+  printf '%s\033[2m%s\033[m%s\n' "-l / --light: print " "light" " text"
+  printf '%s\033[3m%s\033[m%s\n' "-i / --italic: print " "italic" " text"
+  printf '%s\033[4m%s\033[m%s\n' "-u / --underline: print " "underlined" " text"
+  printf '%s\033[31m%s\033[m%s\n' "-c / --color (red,green,yellow,blue,magenta,cyan): print " "colored" " text"
+  printf '%s\033[38;5;123m%s\033[m%s\n' "-x / --color-indexed [0-255]: print " "255-color" " text"
+  printf '%s\033[38;2;255;0;0m%s\033[38;2;0;255;0m%s\033[38;2;0;0;255m%s\033[m%s\n' "-r / --color-rgb [0-255] [0-255] [0-255]: print " "R" "G" "B" " text"
+  printf '%s\n' '-n / --no-newline: disable trailing newline'
+  printf '%s\n' 'operators can be stacked!'
+}
+
+if [ $# -eq 0 ]; then # help clueless users
+  help
+  exit 1
+fi
+
+while [ "$1" != "" ]; do # check if we have any args left
+	case "$1" in
+		--*)
+			case "${1#--}" in
+				help)
+					printhelptext
+					exit
+				;;
+				bold)
+					fstr="$fstr\033[1m"
+				;;
+				light)
+					fstr="$fstr\033[2m"
+				;;
+				italic)
+					fstr="$fstr\033[3m"
+				;;
+				underline)
+					fstr="$fstr\033[4m"
+				;;
+				color)
+						case "$2" in
+							red)
+								fstr="$fstr\033[31m"
+							;;
+							green)
+								fstr="$fstr\033[32m"
+							;;
+							yellow)
+								fstr="$fstr\033[33m"
+							;;
+							blue)
+								fstr="$fstr\033[34m"
+							;;
+							magenta)
+								fstr="$fstr\033[35m"
+							;;
+							cyan)
+								fstr="$fstr\033[36m"
+							;;
+							*)
+								echo "Invalid color, panicking..."
+								exit
+							;;
+						esac
+					shift #remove the color name
+				;;
+				color-rgb)
+					fstr="$fstr\033[38;2;$2;$3;$4m"
+					shift 3 # remove the rgb colors
+				;;
+				color-indexed)
+					fstr="$fstr\033[38;5;$2m"
+					shift # remove the color
+				;;
+				no-newline)
+					n=true
+				;;
+				*)
+					exit
+				;;
+			esac
+		;;
+		-*)
+			sflg="${1#-}"
+			while [ "$sflg" != "" ]; do
+				case "$sflg" in
+					b*)
+						fstr="$fstr\033[1m"
+					;;
+					l*)
+						fstr="$fstr\033[2m"
+					;;
+					i*)
+						fstr="$fstr\033[3m"
+					;;
+					u*)
+						fstr="$fstr\033[4m"
+					;;
+					c*)
+							case "$2" in
+								red)
+									fstr="$fstr\033[31m"
+								;;
+								green)
+									fstr="$fstr\033[32m"
+								;;
+								yellow)
+									fstr="$fstr\033[33m"
+								;;
+								blue)
+									fstr="$fstr\033[34m"
+								;;
+								magenta)
+									fstr="$fstr\033[35m"
+								;;
+								cyan)
+									fstr="$fstr\033[36m"
+								;;
+								*)
+									echo "Invalid color, panicking..."
+									exit
+								;;
+							esac
+						shift # remove the color name
+					;;
+					r*)
+						fstr="$fstr\033[38;2;$2;$3;$4m"
+						shift 3 #remove the rgb colors
+					;;
+					x*)
+						fstr="$fstr\033[38;5;$2m"
+						shift # remove the color
+					;;
+					n*)
+						n=true
+					;;
+					*)
+						echo "Invalid flag, panicking..."
+						exit
+					;;
+				esac
+				sflg=$(printf %s "$sflg" | cut -c2-) # looks bad but posix sh doesn't have string indexing
+			done
+		;;
+		*)
+			if [ -n "$n" ]; then
+				printf "$fstr%s\033[m" "$1"
+			else
+				printf "$fstr%s\033[m\n" "$1"
+			fi
+			exit
+		;;
+	esac
+	shift # go to next argument
+done
