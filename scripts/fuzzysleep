@@ -1,2 +1,70 @@
 #!/bin/sh
 
+# fuzzysleep - so you don't crash the server at midnight
+# made with <3 from moth.monster
+
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+
+random(){ # convenience function that returns a random number between 1 and what you call it with
+  echo $(( $(awk 'BEGIN { srand(); print int(rand()*'$(( $1 - 1 ))') }') + 1 )) # i hate awk
+}
+
+barge(){ # progress bar generator
+	pchr="#" # positive character
+	nchr="." # negative character
+
+	tlen="$1" # total length
+	perc="$2" # percentage
+	unset pbar nbar # prevent problems if script is ran repeatedly
+
+	plen=$(( $(( perc * tlen )) / 100)) # get positive length
+	nlen=$(( tlen - plen )) # get negative length 
+
+	while [ "$plen" -ne 0 ]; do # add pchr to pbar plen times
+		pbar="$pbar""$pchr"	
+		plen=$(( "$plen" - 1 )) 
+	done
+
+	while [ "$nlen" -ne 0 ]; do # add nchr to nbar nlen times
+		nbar="$nbar""$nchr"
+		nlen=$(( "$nlen" - 1 ))
+	done
+
+	printf "%s" "$pbar" # print pbar
+	printf "%s" "$nbar" # print nbar
+}
+
+help(){ # print help/version text
+  printf '%s\n\n' "fuzzysleep v0.1.0"
+  printf '%s\n' "USAGE:"
+  printf '%s\n' "fuzzysleep [n]: sleep for 1-[n] seconds silently"
+  printf '%s\n' "fuzzysleep -v [n]: sleep for 1-[n] seconds and say how long"
+  printf '%s\n' "fuzzysleep -vv [n]: sleep for 1-[n] seconds with a progress bar"
+}
+
+# jarvis, disable all safety regulators
+# shellcheck disable=SC1072,SC1073,SC1009
+
+if [ "$1" -eq "$1" 2> /dev/null ]; then # test input for number-ness
+  sleep "$(random "$1")"
+elif [ "$2" -eq "$2" 2> /dev/null ]; then # test for number-ness again
+  duration=$(random "$2")
+  printf '%s\n' "Sleeping for $duration second(s)..."
+  if [ "$1" = '-v' ]; then
+    sleep "$duration"
+    printf '%s\n' "Done!"
+  elif [ "$1" = '-vv' ]; then
+    i=1
+    printf "[" 
+    while [ "$i" -le "$duration" ]; do # while we are less than 100% complete...
+      barge 20 "$((i * 100 / duration))" # ...display a progress bar with the percentage...
+      printf "] %s\r[" "$i" # ...and the bar ends, and the percentage number itself
+      sleep 1 # actual sleeping
+      i=$(( i + 1 ))
+    done
+    printf '\n%s\n' "Done!"
+  fi
+else
+  help # help clueless users
+fi
