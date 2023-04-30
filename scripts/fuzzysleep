@@ -7,7 +7,7 @@
 
 
 random(){ # convenience function that returns a random number between 1 and what you call it with
-  echo $(( $(awk 'BEGIN { srand(); print int(rand()*'$(( $1 - 1 ))') }') + 1 )) # i hate awk
+  echo $(( $(awk 'BEGIN { srand(); print int(rand()*'$(( $1 - 1 ))') }') + 1 )) # magic
 }
 
 barge(){ # progress bar generator
@@ -16,7 +16,7 @@ barge(){ # progress bar generator
 
 	tlen="$1" # total length
 	perc="$2" # percentage
-	unset pbar nbar # prevent problems if script is ran repeatedly
+	unset pbar nbar # prevent problems if function is ran repeatedly
 
 	plen=$(( $(( perc * tlen )) / 100)) # get positive length
 	nlen=$(( tlen - plen )) # get negative length 
