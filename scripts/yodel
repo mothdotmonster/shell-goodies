@@ -7,21 +7,21 @@
 
 help(){
 	printf '%s\n\n' "yodel v0.2.1"
-  printf '%s\n' "USAGE:"
-  printf '%s\033[1m%s\033[m%s\n' "-b / --bold: print " "bold" " text"
-  printf '%s\033[2m%s\033[m%s\n' "-l / --light: print " "light" " text"
-  printf '%s\033[3m%s\033[m%s\n' "-i / --italic: print " "italic" " text"
-  printf '%s\033[4m%s\033[m%s\n' "-u / --underline: print " "underlined" " text"
-  printf '%s\033[31m%s\033[m%s\n' "-c / --color (red,green,yellow,blue,magenta,cyan): print " "colored" " text"
-  printf '%s\033[38;5;123m%s\033[m%s\n' "-x / --color-indexed [0-255]: print " "255-color" " text"
-  printf '%s\033[38;2;255;0;0m%s\033[38;2;0;255;0m%s\033[38;2;0;0;255m%s\033[m%s\n' "-r / --color-rgb [0-255] [0-255] [0-255]: print " "R" "G" "B" " text"
-  printf '%s\n' '-n / --no-newline: disable trailing newline'
-  printf '%s\n' 'operators can be stacked!'
+	printf '%s\n' "USAGE:"
+	printf '%s\033[1m%s\033[m%s\n' "-b / --bold: print " "bold" " text"
+	printf '%s\033[2m%s\033[m%s\n' "-l / --light: print " "light" " text"
+	printf '%s\033[3m%s\033[m%s\n' "-i / --italic: print " "italic" " text"
+	printf '%s\033[4m%s\033[m%s\n' "-u / --underline: print " "underlined" " text"
+	printf '%s\033[31m%s\033[m%s\n' "-c / --color (red,green,yellow,blue,magenta,cyan): print " "colored" " text"
+	printf '%s\033[38;5;123m%s\033[m%s\n' "-x / --color-indexed [0-255]: print " "255-color" " text"
+	printf '%s\033[38;2;255;0;0m%s\033[38;2;0;255;0m%s\033[38;2;0;0;255m%s\033[m%s\n' "-r / --color-rgb [0-255] [0-255] [0-255]: print " "R" "G" "B" " text"
+	printf '%s\n' '-n / --no-newline: disable trailing newline'
+	printf '%s\n' 'operators can be stacked!'
 }
 
 if [ $# -eq 0 ]; then # help clueless users
-  help
-  exit 1
+	help
+	exit 1
 fi
 
 while [ "$1" != "" ]; do # check if we have any args left
