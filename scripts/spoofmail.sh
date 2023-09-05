@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # spoofmail - gaslight cronie into giving you desktop notifications
 # made with <3 from moth.monster

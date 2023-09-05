@@ -1,6 +1,9 @@
 # pure POSIX shell goodies
 these are a variety of somewhat useful things i have created that you can run in your command line shell. have fun with them.
 
+## spoofmail
+a small bit of glue that lies to cronie and pretends to be sendmail, and then sends you a notification when your cronjobs have something to say. because it's not 1995 anymore, we have desktop notifications now.
+
 ## fuzzysleep
 a tool to prevent you and all your buddies from crashing the server at midnight on Sunday from crontab overloads, by sleeping for a random amount of time. designed mainly to be ran before cron jobs.
 
@@ -17,3 +20,4 @@ a function that generates bars out of percentages, designed to be easy to read a
 
 ## yodel
 a tool that sits around printf to make it slightly less painful to print pretty text. personally i choose to suffer instead, but you may find it useful if you desire to make text-based things in the shell directly
+
