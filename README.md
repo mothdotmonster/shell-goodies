@@ -24,6 +24,11 @@ a function that generates bars out of percentages, designed to be easy to read a
 a tool that sits around printf to make it slightly less painful to print pretty text. personally i choose to suffer instead, but you may find it useful if you desire to make text-based things in the shell directly
 
 ## THermnag
+
+### CURRENTLY BROKEN.
+
+you can remove the nag from the newest version just by making hasLicense() always return true.
+
 removes the license nag from ThunderHTMLedit. download the xpi from [them](http://betterbird.eu/addons/index.html) and run it through the script.
 
 USAGE: ```thermnag.sh (ThunderHTMLEdit.xpi)```
