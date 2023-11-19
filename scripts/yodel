@@ -3,7 +3,7 @@
 # yodel v0.2.1 - a printf wrapper that might not suck
 # made with <3 from moth.monster
 
-# SPDX-License-Identifier: WTFPL
+# SPDX-License-Identifier: MIT-0
 
 help(){
 	printf '%s\n\n' "yodel v0.2.1"

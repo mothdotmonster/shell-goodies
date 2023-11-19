@@ -3,7 +3,7 @@
 # ThunderHTMLedit nag-remover v0.0.1
 # made with <3 from moth.monster
 
-# SPDX-License-Identifier: WTFPL
+# SPDX-License-Identifier: MIT-0
 
 #"Add-ons are just Zip files with JavaScript code and HTML/CSS inside. They are by definition open source. Use any Zip/7Zip program of your choice to inspect the code of the add-on."
 # - Jörg of betterbird.eu, creators of ThunderHTMLedit

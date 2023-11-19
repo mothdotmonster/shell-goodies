@@ -3,7 +3,7 @@
 # spoofmail - gaslight cronie into giving you desktop notifications
 # made with <3 from moth.monster
 
-# SPDX-License-Identifier: WTFPL
+# SPDX-License-Identifier: MIT-0
 
 stdin="$(cat)" # don't call PETA
 

@@ -3,7 +3,7 @@
 # barge v0.1.1 - simple and fast progress bar generator
 # made with <3 from moth.monster
 
-# SPDX-License-Identifier: WTFPL
+# SPDX-License-Identifier: MIT-0
 
 barge(){
 	pchr="#" # positive character
