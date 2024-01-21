@@ -1,0 +1,154 @@
+#!/bin/sh
+
+# beatcoder - makes morse code that fits an arbitrary BPM
+# made with <3 from moth.monster
+# greets to scp93ch for making https://morsecode.world/
+
+# SPDX-License-Identifier: MIT-0
+
+set -e # fail gracefully
+
+if ! type "sox" > /dev/null; then # error if sox is missing
+  echo "You do not have SoX installed."
+	exit 1
+fi
+
+ver="0.1.0"
+
+# default values for variables
+bpm=120
+freq=600
+div=16
+pause=7
+out="out.wav"
+
+help() { # define help text
+	echo "beatcoder $ver - makes morse code that fits an arbitrary BPM"
+	echo "USAGE: beatcoder (flags) \"[text]\" (out)"
+	echo "--bpm / -b: set output BPM (default: 120)"
+	echo "--frequency / --freq / -f: set output frequency (default: 600)"
+	echo "--divisor / --div / -d: set beat divisor (default: 16)"
+	echo "--space / -s: set space duration (default: 7)"
+	echo "--version: print version number"
+	echo "--help: print this text"
+}
+
+if [ $# -eq 0 ]; then # help clueless users
+	help
+	exit 1
+fi
+
+# parse flags
+while [ "$1" != "" ]; do # check if we have any flags left
+	case "$1" in
+		--*)
+			case "${1#--}" in
+				help)
+					help
+					exit
+				;;
+				bpm)
+					bpm="$2"
+					shift
+				;;
+				frequency | freq)
+					freq="$2"
+					shift
+				;;
+				divisor | div)
+					div="$2"
+					shift
+				;;
+				space)
+					pause="$2"
+					shift
+				;;
+				version)
+					echo "beatcoder $ver"
+					exit
+				;;
+				*)
+					echo "Invalid flag, panicking..."
+					exit 1
+				;;
+			esac
+		;;
+		-*)
+			case "${1#-}" in
+				b)
+					bpm="$2"
+					shift
+				;;
+				f)
+					freq="$2"
+					shift
+				;;
+				d)
+					div="$2"
+					shift
+				;;
+				s)
+					pause="$2"
+					shift
+				;;
+				*)
+					echo "Invalid flag, panicking..."
+					exit 1
+				;;
+			esac
+		;;
+		*)
+			if [ "$dejavu" ]; then
+				out="$1"
+			else
+				dejavu="1"
+				text="$1"
+			fi
+		;;
+	esac
+	shift # go to next flag
+done
+
+tmpdir=$(mktemp -d) # get a temporary directory
+
+# do the morseing
+morse=$(morsetran "$text" | sed -e 's/ /X/g; s/X?X/?/g' )
+
+# calculate durations
+dit=$(echo "60 / $bpm / $div" | bc -l | sed 's/^\./0./')
+dah=$(echo "$dit * 3" | bc -l | sed 's/^\./0./')
+long=$(echo "$dit * ($pause - 1)" | bc -l | sed 's/^\./0./')
+
+# make base audio files
+sox -n -r 48000 "$tmpdir/dit.wav" synth "$dit" sine "$freq"
+sox -n -r 48000 "$tmpdir/dah.wav" synth "$dah" sine "$freq"
+sox -n -r 48000 "$tmpdir/intra.wav" trim 0 "$dit" 
+sox -n -r 48000 "$tmpdir/short.wav"	trim 0 "$dah"
+sox -n -r 48000 "$tmpdir/long.wav" trim 0 "$long"
+
+# prep some things
+mkdir "$tmpdir/a"
+i=1
+
+# put everything in a folder
+while [ -n "$morse" ]; do
+	if [ "$(printf %.1s "$morse")" = "." ]; then
+		cp "$tmpdir/dit.wav" "$tmpdir/a/$i.wav"
+		i=$((i + 1))
+		cp "$tmpdir/intra.wav" "$tmpdir/a/$i.wav"
+	elif [ "$(printf %.1s "$morse")" = "-" ]; then
+		cp "$tmpdir/dah.wav" "$tmpdir/a/$i.wav"
+		i=$((i + 1))
+		cp "$tmpdir/intra.wav" "$tmpdir/a/$i.wav"
+	elif [ "$(printf %.1s "$morse")" = "X" ]; then
+		cp "$tmpdir/short.wav" "$tmpdir/a/$i.wav"
+	elif [ "$(printf %.1s "$morse")" = "?" ]; then
+		cp "$tmpdir/long.wav" "$tmpdir/a/$i.wav"
+	fi
+	i=$((i + 1))
+	morse=$(printf %s "$morse" | cut -c2-) # remove first character
+done
+
+# we actually WANT word splitting, so…
+# shellcheck disable=SC2046
+sox $(find "$tmpdir/a" -type f -print0 | xargs -0) "$out"
