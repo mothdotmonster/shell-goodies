@@ -13,6 +13,11 @@ if ! type "sox" > /dev/null; then # error if sox is missing
 	exit 1
 fi
 
+if ! type "morsetran" > /dev/null; then # error if sox is missing
+  echo "You do not have morsetran installed."
+	exit 1
+fi
+
 ver="0.1.0"
 
 # default values for variables
