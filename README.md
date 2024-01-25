@@ -2,7 +2,7 @@
 these are a variety of somewhat useful things i have created that you can run in your command line shell. have fun with them.
 
 ## beatcoder
-WIP tool for generating morse code that roughly fits a specified BPM
+tool for generating morse code that roughly fits a specified BPM
 
 ## spoofmail
 a small bit of glue that lies to cronie and pretends to be sendmail, and then sends you a notification when your cronjobs have something to say. because it's not 1995 anymore, we have desktop notifications now.
