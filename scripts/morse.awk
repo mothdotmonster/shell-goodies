@@ -1,7 +1,7 @@
 #!/bin/awk -f 
 
 # this isn't actually needed by anything like this, 
-#	but i thought i might as well include it on it's own
+# but i thought i might as well include it on it's own
 # made with <3 from moth.monster
 
 # SPDX-License-Identifier: MIT-0
