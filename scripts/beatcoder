@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # beatcoder - makes morse code that fits an arbitrary BPM
-# made with <3 from moth.monster
 # greets to scp93ch for making https://morsecode.world/
+# made with <3 from moth.monster
 
 # SPDX-License-Identifier: MIT-0
 
@@ -13,12 +13,7 @@ if ! type "sox" > /dev/null; then # error if sox is missing
 	exit 1
 fi
 
-if ! type "morsetran" > /dev/null; then # error if sox is missing
-  echo "You do not have morsetran installed."
-	exit 1
-fi
-
-ver="0.1.1"
+ver="0.1.2"
 
 # default values for variables
 bpm=120
@@ -134,8 +129,69 @@ done
 
 tmpdir=$(mktemp -d) # get a temporary directory
 
-# do the morseing
-morse=$(morsetran "$text" | sed -e 's/ /X/g; s/X?X/?/g' )
+# put our input text into a file because awk is fucking stupid, then morseify
+printf "%s" "$text"> "$tmpdir/text"
+morse=$(\
+	awk -f- "$tmpdir/text" <<- 'EOF'
+		BEGIN {
+			FS="" # empty field separator so we process one character at a time
+			# define encoding as an array
+			morse["A"] = ".-X"
+			morse["B"] = "-...X"
+			morse["C"] = "-.-.X"
+			morse["D"] = "-..X"
+			morse["E"] = ".X"
+			morse["F"] = "..-.X"
+			morse["G"] = "--.X"
+			morse["H"] = "....X"
+			morse["I"] = "..X"
+			morse["J"] = ".---X"
+			morse["K"] = "-.-X"
+			morse["L"] = ".-..X"
+			morse["M"] = "--X"
+			morse["N"] = "-.X"
+			morse["O"] = "---X"
+			morse["P"] = ".--.X"
+			morse["Q"] = "--.-X"
+			morse["R"] = ".-.X"
+			morse["S"] = "...X"
+			morse["T"] = "-X"
+			morse["U"] = "..-X"
+			morse["V"] = "...-X"
+			morse["W"] = ".--X"
+			morse["X"] = "-..-X"
+			morse["Y"] = "-.--X"
+			morse["Z"] = "--..X"
+			morse["0"] = "-----X"
+			morse["1"] = ".----X"
+			morse["2"] = "..---X"
+			morse["3"] = "...--X"
+			morse["4"] = "....-X"
+			morse["5"] = ".....X"
+			morse["6"] = "-....X"
+			morse["7"] = "--...X"
+			morse["8"] = "---..X"
+			morse["9"] = "----.X"
+			morse["."] = ".-.-.-X"
+			morse[","] = "--..--X"
+			morse["?"] = "..--..X"
+			morse["-"] = "-....-X"
+			morse["/"] = "-..-.X"
+			morse[":"] = "---...X"
+			morse["'"] = ".----.X"
+			morse["-"] = "-....-X"
+			morse[")"] = "-.--.-X"
+			morse[";"] = "-.-.-X"
+			morse["("] = "-.--.X"
+			morse["="] = "-...-X"
+			morse["@"] = ".--.-.X"
+			morse[" "] = "?"
+		}{
+			for (i=1;i<=NF;i++) 
+				printf "%s", morse[toupper($i)] # index into the array with the character we need
+		}
+	EOF
+)
 
 # calculate durations
 dit=$(echo "60 / $bpm / $div" | bc -l | sed 's/^\./0./')
