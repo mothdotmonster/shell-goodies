@@ -18,7 +18,7 @@ if ! type "morsetran" > /dev/null; then # error if sox is missing
 	exit 1
 fi
 
-ver="0.1.0"
+ver="0.1.1"
 
 # default values for variables
 bpm=120
@@ -34,6 +34,8 @@ help() { # define help text
 	echo "--frequency / --freq / -f: set output frequency (default: 600)"
 	echo "--divisor / --div / -d: set beat divisor (default: 16)"
 	echo "--space / -s: set space duration (default: 7)"
+	echo "--dit / -i: set dit sample"
+	echo "--dah / -a: set dah sample"
 	echo "--version: print version number"
 	echo "--help: print this text"
 }
@@ -68,6 +70,14 @@ while [ "$1" != "" ]; do # check if we have any flags left
 					pause="$2"
 					shift
 				;;
+				dit)
+					ditsample="$2"
+					shift
+				;;
+				dah)
+					dahsample="$2"
+					shift
+				;;
 				version)
 					echo "beatcoder $ver"
 					exit
@@ -94,6 +104,14 @@ while [ "$1" != "" ]; do # check if we have any flags left
 				;;
 				s)
 					pause="$2"
+					shift
+				;;
+				i)
+					ditsample="$2"
+					shift
+				;;
+				a)
+					dahsample="$2"
 					shift
 				;;
 				*)
@@ -124,9 +142,20 @@ dit=$(echo "60 / $bpm / $div" | bc -l | sed 's/^\./0./')
 dah=$(echo "$dit * 3" | bc -l | sed 's/^\./0./')
 long=$(echo "$dit * ($pause - 1)" | bc -l | sed 's/^\./0./')
 
-# make base audio files
-sox -n -r 48000 "$tmpdir/dit.wav" synth "$dit" sine "$freq"
-sox -n -r 48000 "$tmpdir/dah.wav" synth "$dah" sine "$freq"
+# move/create dit and dah samples
+if [ -n "$ditsample" ]; then
+	sox "$ditsample" -r 48000	"$tmpdir/dit.wav" trim 0 "$dit"
+else
+	sox -n -r 48000 "$tmpdir/dit.wav" synth "$dit" sine "$freq"
+fi
+
+if [ -n "$dahsample" ]; then
+	sox "$dahsample" -r 48000	"$tmpdir/dah.wav" trim 0 "$dah"
+else
+	sox -n -r 48000 "$tmpdir/dah.wav" synth "$dah" sine "$freq"
+fi
+
+# make silent files
 sox -n -r 48000 "$tmpdir/intra.wav" trim 0 "$dit" 
 sox -n -r 48000 "$tmpdir/short.wav"	trim 0 "$dah"
 sox -n -r 48000 "$tmpdir/long.wav" trim 0 "$long"
